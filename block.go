@@ -27,7 +27,7 @@ func (b *Block) SetHash() {
 
 // NewBlock creates and returns Block
 func NewBlock(data string, prevBlockHash []byte) *Block {
-	block := &Block{time.Now().UnixNano(), []byte(data), prevBlockHash, []byte{}}
+	block := &Block{time.Now().UnixNano()  / int64(time.Millisecond), []byte(data), prevBlockHash, []byte{}}
 	block.SetHash()
 
 	// Log info
