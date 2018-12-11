@@ -1,10 +1,12 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+)
 
 func main() {
 	bc := NewBlockchain()
-
 
 	bc.AddBlock("Remittance tx from Moscow to Dushanbe")
 	bc.AddBlock("Remittance tx from Dushanbe to Tashkent")
@@ -16,6 +18,8 @@ func main() {
 		fmt.Printf("Data: %s\n", block.Data)
 		fmt.Printf("Hash: %x\n", block.Hash)
 		fmt.Printf("Timestamp: %x\n", block.Timestamp)
+		pow := NewProofOfWork(block)
+		fmt.Printf("PoW: %s\n", strconv.FormatBool(pow.Validate()))
 		fmt.Println()
 	}
 }
