@@ -1,4 +1,4 @@
-package main
+package blockchain
 
 import (
 	"bytes"
@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"math"
 	"math/big"
+
+	"andskur/blockchain/experemental/utils"
 )
 
 const (
@@ -34,9 +36,9 @@ func (pow *ProofOfWork) prepareData(nonce int) []byte {
 		[][]byte{
 			pow.block.PrevBlockHash,
 			pow.block.Data,
-			IntToHex(pow.block.Timestamp),
-			IntToHex(int64(targetBits)),
-			IntToHex(int64(nonce)),
+			utils.IntToHex(pow.block.Timestamp),
+			utils.IntToHex(int64(targetBits)),
+			utils.IntToHex(int64(nonce)),
 		},
 		[]byte{},
 	)

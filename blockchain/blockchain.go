@@ -1,9 +1,10 @@
-package main
+package blockchain
 
 import (
 	"fmt"
-	"github.com/boltdb/bolt"
 	"log"
+
+	"github.com/boltdb/bolt"
 )
 
 const (
@@ -13,21 +14,21 @@ const (
 
 // Blockchain keeps a sequence of Blocks
 type Blockchain struct {
-	tip []byte
-	db  *bolt.DB
+	Tip []byte
+	Db  *bolt.DB
 }
 
 // BlockchainIterator is used to iterate over blockchain blocks
 type BlockchainIterator struct {
-	currentHash []byte
-	db          *bolt.DB
+	CurrentHash []byte
+	Db          *bolt.DB
 }
 
 // AddBlock saves provided data as a block in the blockchain
 func (bc *Blockchain) AddBlock(data string) {
 	var lastHash []byte
 
-	err := bc.db.View(func(tx *bolt.Tx) error {
+	err := bc.Db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(blocksBucket))
 		lastHash = b.Get([]byte("l"))
 
@@ -39,7 +40,7 @@ func (bc *Blockchain) AddBlock(data string) {
 
 	newBlock := NewBlock(data, lastHash)
 
-	err = bc.db.Update(func(tx *bolt.Tx) error {
+	err = bc.Db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(blocksBucket))
 		err := b.Put(newBlock.Hash, newBlock.Serialize())
 		if err != nil {
@@ -49,7 +50,7 @@ func (bc *Blockchain) AddBlock(data string) {
 		if err != nil {
 			log.Panic(err)
 		}
-		bc.tip = newBlock.Hash
+		bc.Tip = newBlock.Hash
 
 		return nil
 	})
@@ -57,7 +58,7 @@ func (bc *Blockchain) AddBlock(data string) {
 
 // Iterator ...
 func (bc *Blockchain) Iterator() *BlockchainIterator {
-	bci := &BlockchainIterator{bc.tip, bc.db}
+	bci := &BlockchainIterator{bc.Tip, bc.Db}
 
 	return bci
 }
@@ -66,9 +67,9 @@ func (bc *Blockchain) Iterator() *BlockchainIterator {
 func (i *BlockchainIterator) Next() *Block {
 	var block *Block
 
-	err := i.db.View(func(tx *bolt.Tx) error {
+	err := i.Db.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(blocksBucket))
-		encodedBlock := b.Get(i.currentHash)
+		encodedBlock := b.Get(i.CurrentHash)
 		block = DeserializeBlock(encodedBlock)
 
 		return nil
@@ -78,7 +79,7 @@ func (i *BlockchainIterator) Next() *Block {
 		log.Panic(err)
 	}
 
-	i.currentHash = block.PrevBlockHash
+	i.CurrentHash = block.PrevBlockHash
 
 	return block
 }
