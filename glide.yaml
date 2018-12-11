@@ -1,0 +1,3 @@
+package: andskur/blockchain/expiremental
+import:
+- package: github.com/boltdb/bolt
