@@ -6,12 +6,14 @@ import (
 	"encoding/gob"
 	"log"
 	"time"
+
+	"github.com/andskur/experemental/services/blockchain/txs"
 )
 
 // Block represents a block in the blockchain
 type Block struct {
 	Timestamp     	int64
-	Transactions	[]*Transaction
+	Transactions	[]*txs.Transaction
 	PrevBlockHash 	[]byte
 	Hash          	[]byte
 	Nonce         	int
@@ -42,7 +44,7 @@ func (b *Block) HashTransactions() []byte {
 }
 
 // NewBlock creates and returns Block
-func NewBlock(transactions []*Transaction, prevBlockHash []byte) *Block {
+func NewBlock(transactions []*txs.Transaction, prevBlockHash []byte) *Block {
 	block := &Block{time.Now().Unix(), transactions, prevBlockHash, []byte{}, 0}
 	pow := NewProofOfWork(block)
 	nonce, hash := pow.Run()
@@ -54,8 +56,8 @@ func NewBlock(transactions []*Transaction, prevBlockHash []byte) *Block {
 }
 
 // NewGenesisBlock creates and returns genesis Block
-func NewGenesisBlock(coinbase *Transaction) *Block {
-	return NewBlock([]*Transaction{coinbase}, []byte{})
+func NewGenesisBlock(coinbase *txs.Transaction) *Block {
+	return NewBlock([]*txs.Transaction{coinbase}, []byte{})
 }
 
 // DeserializeBlock deserializes a block

@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	"github.com/andskur/experemental/services/blockchain"
+	"github.com/andskur/experemental/services/blockchain/txs"
 	"github.com/andskur/experemental/services/wallets"
 )
 
@@ -111,7 +112,7 @@ func (cli *CLI) send(from, to string, amount int) {
 	defer bc.Db.Close()
 
 	tx := blockchain.NewUTXOTransaction(from, to, amount, bc)
-	bc.MineBlock([]*blockchain.Transaction{tx})
+	bc.MineBlock([]*txs.Transaction{tx})
 	fmt.Println("Success!")
 }
 

@@ -1,4 +1,4 @@
-package blockchain
+package txs
 
 import (
 	"bytes"
@@ -9,7 +9,6 @@ import (
 	"encoding/gob"
 	"encoding/hex"
 	"fmt"
-	"github.com/andskur/experemental/services/wallets"
 	"log"
 	"math/big"
 )
@@ -154,49 +153,6 @@ func NewCoinbaseTX(to, data string) *Transaction{
 	txout := NewTXOutput(subsidy, to)
 	tx := Transaction{nil, []TXInput{txin}, []TXOutput{*txout}}
 	tx.ID = tx.Hash()
-
-	return &tx
-}
-
-// NewUTXOTransaction creates a new transaction
-func NewUTXOTransaction(from, to string, amount int, bc *Blockchain) *Transaction {
-	var inputs []TXInput
-	var outputs []TXOutput
-
-	keystore, err := wallets.NewWallets()
-	if err != nil {
-		log.Panic(err)
-	}
-	wallet := keystore.GetWallet(from)
-	pubKeyHash := wallets.HashPubKey(wallet.PublicKey)
-	acc, validOutputs := bc.FindSpendableOutputs(pubKeyHash, amount)
-
-	if acc < amount {
-		log.Panic("ERROR: Not enough funds")
-	}
-
-	// Build a list of inputs
-	for txid, outs := range validOutputs {
-		txID, err := hex.DecodeString(txid)
-		if err != nil {
-			log.Panic(err)
-		}
-
-		for _, out := range outs {
-			input := TXInput{txID, out, nil, wallet.PublicKey}
-			inputs = append(inputs, input)
-		}
-	}
-
-	// Build a list of outputs
-	outputs = append(outputs, *NewTXOutput(amount, to))
-	if acc > amount {
-		outputs = append(outputs, *NewTXOutput(acc-amount, from)) // a change
-	}
-
-	tx := Transaction{nil, inputs, outputs}
-	tx.ID = tx.Hash()
-	bc.SignTransaction(&tx, wallet.PrivateKey)
 
 	return &tx
 }
