@@ -7,7 +7,7 @@ import (
 	"math"
 	"math/big"
 
-	"andskur/blockchain/experemental/utils"
+	"github.com/andskur/experemental/utils"
 )
 
 const (

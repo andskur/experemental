@@ -1,7 +1,7 @@
 package main
 
 import (
-	"andskur/blockchain/experemental/cmd/cli"
+	"github.com/andskur/experemental/cmd/cli"
 )
 
 func main() {

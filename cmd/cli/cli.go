@@ -7,7 +7,7 @@ import (
 	"os"
 	"strconv"
 
-	"andskur/blockchain/experemental/blockchain"
+	"github.com/andskur/experemental/blockchain"
 )
 
 // CLI responsible for processing command line arguments

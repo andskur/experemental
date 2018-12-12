@@ -9,7 +9,7 @@ import (
 	"log"
 )
 
-const subsidy = 10
+const subsidy = 10000
 
 // Transaction represents a Blockchain transaction
 type Transaction struct {
