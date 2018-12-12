@@ -3,15 +3,15 @@ package cli
 import (
 	"flag"
 	"fmt"
-	"github.com/andskur/experemental/utils"
 	"log"
 	"os"
-	"strconv"
 
 	"github.com/andskur/experemental/services/blockchain"
 	"github.com/andskur/experemental/services/blockchain/txs"
 	"github.com/andskur/experemental/services/wallets"
 )
+
+// TODO mmake it with Cobra package
 
 // CLI responsible for processing command line arguments
 type CLI struct {}
@@ -24,79 +24,6 @@ func (cli *CLI) printUsage() {
 	fmt.Println("  listaddresses - Lists all addresses from the wallet file")
 	fmt.Println("  printchain - Print all the blocks of the blockchain")
 	fmt.Println("  send -from FROM -to TO -amount AMOUNT - Send AMOUNT of coins from FROM address to TO")
-}
-
-func (cli *CLI) createBlockchain(address string) {
-	if !wallets.ValidateAddress(address) {
-		log.Panic("ERROR: Address is not valid")
-	}
-	bc := blockchain.CreateBlockchain(address)
-	bc.Db.Close()
-	fmt.Println("Done!")
-}
-
-func (cli *CLI) getBalance(address string) {
-	if !wallets.ValidateAddress(address) {
-		log.Panic("ERROR: Address is not valid")
-	}
-	bc := blockchain.NewBlockchain(address)
-	defer bc.Db.Close()
-
-	balance := 0
-	pubKeyHash := utils.Base58Decode([]byte(address))
-	pubKeyHash = pubKeyHash[1 : len(pubKeyHash)-4]
-	UTXOs := bc.FindUTXO(pubKeyHash)
-
-	for _, out := range UTXOs {
-		balance += out.Value
-	}
-
-	fmt.Printf("Balance of '%s': %d\n", address, balance)
-}
-
-func (cli *CLI) createWallet() {
-	keystore, _ := wallets.NewWallets()
-	address := keystore.CreateWallet()
-	keystore.SaveToFile()
-
-	fmt.Printf("Your new address: %s\n", address)
-}
-
-func (cli *CLI) listAddresses() {
-	keystore, err := wallets.NewWallets()
-	if err != nil {
-		log.Panic(err)
-	}
-	addresses := keystore.GetAddresses()
-
-	for _, address := range addresses {
-		fmt.Println(address)
-	}
-}
-
-// Print all Blockchain data in output
-func (cli *CLI) printChain() {
-	bc := blockchain.NewBlockchain("")
-	defer bc.Db.Close()
-
-	bci := bc.Iterator()
-
-	for {
-		block := bci.Next()
-
-		fmt.Printf("============ Block %x ============\n", block.Hash)
-		fmt.Printf("Prev. block: %x\n", block.PrevBlockHash)
-		pow := blockchain.NewProofOfWork(block)
-		fmt.Printf("PoW: %s\n\n", strconv.FormatBool(pow.Validate()))
-		for _, tx := range block.Transactions {
-			fmt.Println(tx)
-		}
-		fmt.Printf("\n\n")
-
-		if len(block.PrevBlockHash) == 0 {
-			break
-		}
-	}
 }
 
 // Make transaction from one address to another

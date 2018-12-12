@@ -2,6 +2,7 @@ package txs
 
 import (
 	"bytes"
+
 	"github.com/andskur/experemental/services/wallets"
 )
 // TXInput represents a transaction input
