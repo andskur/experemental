@@ -146,7 +146,12 @@ func (tx *Transaction) TrimmedCopy() Transaction {
 // NewCoinbaseTX creates a new coinbase transaction
 func NewCoinbaseTX(to, data string) *Transaction{
 	if data == "" {
-		data = fmt.Sprintf("Reward to '%s'", to)
+		randData := make([]byte, 20)
+		_, err := rand.Read(randData)
+		if err != nil {
+			log.Panic(err)
+		}
+		data = fmt.Sprintf("%x", randData)
 	}
 
 	txin := TXInput{[]byte{}, -1, nil, []byte(data)}
